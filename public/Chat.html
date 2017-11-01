@@ -5,7 +5,7 @@
 	<title>Title</title>
 	<link rel = "stylesheet"
 	      type = "text/css"
-	      href = "../css/bootstrap.css" />
+	      href = "bootstrap.css" />
 
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
@@ -22,7 +22,7 @@
 
 			socket.on('append chat message',function (msg,color,fontWeight,fontStyle,userId){
 				var li = document.createElement("li");
-				li.id = userId;
+				li.className = userId;
 				li.innerHTML = msg;
 				if(color !== null) {
 					li.style.color = color;
@@ -35,15 +35,18 @@
 				}
 				$("#messages").append(li);
 			});
-			socket.on('set Previous msg color',function (color,userId) {
-				$("#"+userId).css("color",color);
+			socket.on('set Previous msg color',function (Pcolor,userId) {
+				var userid = "."+userId;
+                $(userid).css("color",Pcolor);
 
 			});
 			socket.on('set Previous msg to Bold',function (userId) {
-				$("#"+userId).css("font-weight","Bold");
+                var userid = "."+userId;
+                $(userid).css("fontWeight","Bold");
 			});
 			socket.on('set Previous msg to italic',function (userId) {
-				$("#"+userId).css('font-style', 'italic');
+                var userid = "."+userId;
+                $(userid).css("fontStyle","italic")
 			});
 
 		});

@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express();
-app.use(express.static('C:\\Users\\Jbt\\WebstormProjects\\SaarZiv_OfekChat\\public'))
+app.use(express.static('C:\\Users\\user\\WebstormProjects\\SaarZiv_OfekChat\\public'))
 
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -9,9 +9,7 @@ var io = require('socket.io')(http);
 app.get('/', function (req, res) {
 	res.send('Hello World! !!!')
 });
-app.get('/Chat', function (req, res) {
-	res.sendfile("C:\\Users\\Jbt\\WebstormProjects\\SaarZiv_OfekChat\\public\\Html\\Chat.html")
-});
+
 io.emit('chat message', { for: 'everyone' });
 
 var appUserId = 0;
@@ -53,10 +51,10 @@ io.on('connection', function(socket){
 				var Pcolor = dividedColor[dividedColor.length -1];
 				socket.broadcast.emit("set Previous msg color",Pcolor,userInstance.userId);
 				break;
-			case new RegExp("\setPBold"):
+			case new RegExp("\setPBold").test(msg):
 				socket.broadcast.emit("set Previous msg to Bold",userInstance.userId);
 				break;
-			case new RegExp("\setPitalic"):
+			case new RegExp("\setPitalic").test(msg):
 				socket.broadcast.emit("set Previous msg to italic",userInstance.userId);
 				break;
 			default:
