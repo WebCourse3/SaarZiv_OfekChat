@@ -12,23 +12,40 @@
 	<script>
 		$(function () {
 			var socket = io();
+
 			$('form').submit(function(){
 				socket.emit('chat message', $('#tweetText').val());
 				$('#tweetText').val('');
 				return false;
 			});
-			socket.on('chat message',function(msg){
-				$("#messages").append($("<li>").text(msg));
+
+
+			socket.on('append chat message',function (msg,color,fontWeight,fontStyle,userId){
+				var li = document.createElement("li");
+				li.id = userId;
+				li.innerHTML = msg;
+				if(color !== null) {
+					li.style.color = color;
+				}
+				if(fontWeight !== null){
+					li.style.fontWeight = fontWeight;
+				}
+				if(fontStyle !== null){
+					li.style.fontStyle = fontStyle;
+				}
+				$("#messages").append(li);
 			});
-			socket.on('set color',function (color) {
-				$("#tweetText").css("color",color);
-			})
-			socket.on('set Bold',function () {
-				$("#tweetText").css("font-weight","Bold");
-			})
-			socket.on('set italic',function () {
-				$("#tweetText").css('font-style', 'italic');
-			})
+			socket.on('set Previous msg color',function (color,userId) {
+				$("#"+userId).css("color",color);
+
+			});
+			socket.on('set Previous msg to Bold',function (userId) {
+				$("#"+userId).css("font-weight","Bold");
+			});
+			socket.on('set Previous msg to italic',function (userId) {
+				$("#"+userId).css('font-style', 'italic');
+			});
+
 		});
 
 	</script>

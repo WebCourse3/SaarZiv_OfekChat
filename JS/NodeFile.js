@@ -14,30 +14,59 @@ app.get('/Chat', function (req, res) {
 });
 io.emit('chat message', { for: 'everyone' });
 
+var appUserId = 0;
+var userClass = function (){
+	this.userId = 0;
+	this.color = "";
+	this.fontWeight = "";
+	this.fontStyle = "";
+};
+
 io.on('connection', function(socket){
+	var userInstance = new userClass();
+	appUserId ++;
+	userInstance.userId = appUserId;
+
 	socket.on('disconnect', function(){
 		console.log('user disconnected');
 	});
-	socket.on('chat message',function (msg) {
 
+	socket.on('chat message',function (msg) {
+		var dividedColor = msg.split(" ");
 		switch(true){
+
 			case new RegExp("\setColor .+").test(msg):
-				var dividedColor = msg.split(" ");
-				var color = dividedColor[dividedColor.length -1]
-				socket.emit("set color",color);
+				userInstance.color =dividedColor[dividedColor.length -1];
 				break;
+
 			case new RegExp("\setBold").test(msg):
-				socket.emit("set Bold");
+				userInstance.fontWeight = "Bold";
 				break;
+
 			case new RegExp("\setitalic").test(msg):
-				socket.emit("set italic");
+				userInstance.fontStyle = "italic";
+				break;
+
+				/*Extra Functions , changes previous messages according to user.
+				* didnt finish them yet.*/
+			case new RegExp("\setPColor +.").test(msg):
+				var Pcolor = dividedColor[dividedColor.length -1];
+				socket.broadcast.emit("set Previous msg color",Pcolor,userInstance.userId);
+				break;
+			case new RegExp("\setPBold"):
+				socket.broadcast.emit("set Previous msg to Bold",userInstance.userId);
+				break;
+			case new RegExp("\setPitalic"):
+				socket.broadcast.emit("set Previous msg to italic",userInstance.userId);
 				break;
 			default:
-				socket.broadcast.emit("chat message",msg);
+				socket.broadcast.emit('append chat message',msg,userInstance.color,userInstance.fontWeight,userInstance.fontStyle,userInstance.userId);
 				break;
 
 		}
-	})
+	});
+
+
 });
 
 
