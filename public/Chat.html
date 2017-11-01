@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+	<link rel = "stylesheet"
+	      type = "text/css"
+	      href = "bootstrap.css" />
+
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+	<script>
+		$(function () {
+			var socket = io();
+
+			$('form').submit(function(){
+				socket.emit('chat message', $('#tweetText').val());
+				$('#tweetText').val('');
+				return false;
+			});
+
+
+			socket.on('append chat message',function (msg,color,fontWeight,fontStyle,userId){
+				var li = document.createElement("li");
+				li.className = userId;
+				li.innerHTML = msg;
+				if(color !== null) {
+					li.style.color = color;
+				}
+				if(fontWeight !== null){
+					li.style.fontWeight = fontWeight;
+				}
+				if(fontStyle !== null){
+					li.style.fontStyle = fontStyle;
+				}
+				$("#messages").append(li);
+			});
+			socket.on('set Previous msg color',function (Pcolor,userId) {
+				var userid = "."+userId;
+                $(userid).css("color",Pcolor);
+
+			});
+			socket.on('set Previous msg to Bold',function (userId) {
+                var userid = "."+userId;
+                $(userid).css("fontWeight","Bold");
+			});
+			socket.on('set Previous msg to italic',function (userId) {
+                var userid = "."+userId;
+                $(userid).css("fontStyle","italic")
+			});
+
+		});
+
+	</script>
+<body>
+	<ul class="list-group" id="messages"></ul>
+
+	<form action="">
+		<input id="userName" class="input-group" type="text" placeholder="User name" />
+		<input autocomplete="off" id="tweetText" class="input-group" type="text" placeholder="Tweet here.." />
+		<button class="btn btn-primary">Send</button>
+	</form>
+</body>
+</html>
